@@ -90,6 +90,10 @@ async function runBacktest() {
 }
 
 async function requestBacktest(config) {
+  if (location.hostname.endsWith("github.io") || location.protocol === "file:") {
+    return runStaticBacktest(config);
+  }
+
   try {
     const response = await fetch("api/sample-backtest", {
       method: "POST",
