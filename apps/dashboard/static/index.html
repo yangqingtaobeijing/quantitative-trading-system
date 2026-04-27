@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quant Trading Workbench</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23c88419'/%3E%3Cpath d='M7 21h18M10 17l4-5 4 3 5-8' fill='none' stroke='%23171716' stroke-width='3'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css?v=20260427-1" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="rail" aria-label="主导航">
+        <div class="brand">
+          <span class="brand-mark">QT</span>
+          <div>
+            <strong>Quant Desk</strong>
+            <span>US MVP</span>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a href="#overview" class="active">总览</a>
+          <a href="#backtest">回测</a>
+          <a href="#strategy">策略</a>
+          <a href="#risk">风控</a>
+          <a href="#confirmations">确认</a>
+          <a href="#orders">订单</a>
+        </nav>
+        <div class="rail-status">
+          <span class="dot"></span>
+          <span>Paper only</span>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">US equities / Daily bars / Long only</p>
+            <h1>美股量化交易工作台</h1>
+          </div>
+          <button id="runBacktest" class="run-button" type="button" aria-label="运行样例回测">
+            <span aria-hidden="true">▶</span>
+            <span id="runButtonText">运行回测</span>
+          </button>
+        </header>
+
+        <section id="overview" class="metrics-grid" aria-label="回测摘要">
+          <article class="metric">
+            <span>初始资金</span>
+            <strong id="initialEquity">$100,000.00</strong>
+          </article>
+          <article class="metric accent">
+            <span>最终权益</span>
+            <strong id="finalEquity">等待运行</strong>
+          </article>
+          <article class="metric">
+            <span>总收益率</span>
+            <strong id="totalReturn">--</strong>
+          </article>
+          <article class="metric">
+            <span>订单 / 成交 / 拒单</span>
+            <strong id="orderStats">--</strong>
+          </article>
+          <article class="metric">
+            <span>运行反馈</span>
+            <strong id="runFeedback">尚未运行</strong>
+          </article>
+        </section>
+
+        <section id="backtest" class="panel-grid">
+          <section class="panel wide">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Equity curve</p>
+                <h2>净值曲线</h2>
+              </div>
+              <span id="curveStatus" class="status-chip">未运行</span>
+            </div>
+            <div class="chart-wrap">
+              <svg id="equityChart" viewBox="0 0 900 260" role="img" aria-label="回测净值曲线"></svg>
+            </div>
+          </section>
+
+          <section id="strategy" class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Strategy</p>
+                <h2>MA Trend</h2>
+              </div>
+            </div>
+            <form class="config-form" id="strategyForm">
+              <label>
+                <span>标的</span>
+                <input id="symbolInput" name="symbol" value="SPY" autocomplete="off" />
+              </label>
+              <label>
+                <span>短均线（日）</span>
+                <input id="shortWindowInput" name="short_window" type="number" min="1" max="250" value="20" />
+              </label>
+              <label>
+                <span>长均线（日）</span>
+                <input id="longWindowInput" name="long_window" type="number" min="2" max="259" value="60" />
+              </label>
+              <label>
+                <span>目标仓位（%）</span>
+                <input id="targetWeightInput" name="target_weight" type="number" min="0" max="100" step="1" value="20" />
+              </label>
+              <label>
+                <span>样本天数</span>
+                <input id="sampleDaysInput" name="sample_days" type="number" min="80" max="1000" value="260" />
+              </label>
+            </form>
+          </section>
+
+          <section id="risk" class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Risk</p>
+                <h2>风控规则</h2>
+              </div>
+            </div>
+            <form class="config-form" id="riskForm">
+              <label>
+                <span>单标的上限（%）</span>
+                <input id="maxSymbolWeightInput" name="max_symbol_weight" type="number" min="1" max="100" step="1" value="25" />
+              </label>
+              <label>
+                <span>单笔订单上限（%）</span>
+                <input id="maxOrderPctInput" name="max_order_notional_pct" type="number" min="1" max="100" step="1" value="25" />
+              </label>
+              <label>
+                <span>初始资金（USD）</span>
+                <input id="initialCashInput" name="initial_cash" type="number" min="1000" step="1000" value="100000" />
+              </label>
+              <label>
+                <span>单笔佣金（USD）</span>
+                <input id="commissionInput" name="commission_per_order" type="number" min="0" step="0.1" value="1" />
+              </label>
+              <label>
+                <span>滑点（bps）</span>
+                <input id="slippageInput" name="slippage_bps" type="number" min="0" step="1" value="5" />
+              </label>
+              <label class="toggle-line">
+                <span>只做多</span>
+                <input id="longOnlyInput" name="long_only" type="checkbox" checked />
+              </label>
+            </form>
+          </section>
+        </section>
+
+        <section id="confirmations" class="table-section">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Manual gate</p>
+              <h2>待确认订单</h2>
+            </div>
+            <span id="pendingStats" class="muted">--</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>建议</th>
+                  <th>标的</th>
+                  <th>方向</th>
+                  <th>数量</th>
+                  <th>估算价</th>
+                  <th>金额</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="suggestionsTable">
+                <tr><td colspan="7" class="empty">运行回测后生成待确认订单</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="orders" class="table-section">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Execution log</p>
+              <h2>模拟执行日志</h2>
+            </div>
+            <span id="lastUpdated" class="muted">--</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>订单</th>
+                  <th>标的</th>
+                  <th>方向</th>
+                  <th>数量</th>
+                  <th>估算价</th>
+                  <th>金额</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTable">
+                <tr><td colspan="7" class="empty">确认或拒绝待确认订单后显示日志</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="app.js?v=20260427-1"></script>
+  </body>
+</html>
